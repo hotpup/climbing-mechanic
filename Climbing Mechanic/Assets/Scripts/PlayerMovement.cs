@@ -11,16 +11,10 @@ public class PlayerMovement : MonoBehaviour
     public float wallJumpingPowerY = 3f;
     private float moveSpeed = 0;
     private float horizontalInput;
-
+    private float delay = 0;
     private bool isRunning;
     private bool isGrounded;
     private bool onWall;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
     // Update is called once per frame
     void Update()
@@ -31,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
                 isGrounded = false;
             } else if(onWall) {
                 myRigidbody.velocity = new Vector2(-transform.localScale.x * wallJumpingPowerX, wallJumpingPowerY); 
+                delay = 0.5f;
             }
         }
     
@@ -40,11 +35,17 @@ public class PlayerMovement : MonoBehaviour
             isRunning = false;
         }
 
-        horizontalInput = Input.GetAxisRaw("Horizontal");
-        if(horizontalInput > 0) {
-            transform.localScale = new Vector3(1, 1, 1);
+        if(delay <= 0) {
+            horizontalInput = Input.GetAxisRaw("Horizontal");
+            if(horizontalInput > 0) {
+                transform.localScale = new Vector3(1, 1, 1);
+                myRigidbody.velocity = new Vector2(0, myRigidbody.velocity.y);
+            } else if(horizontalInput < 0) {
+                transform.localScale = new Vector3(-1,1,1);
+                myRigidbody.velocity = new Vector2(0, myRigidbody.velocity.y);
+            }
         } else {
-            transform.localScale = new Vector3(-1,1,1);
+            delay -= Time.deltaTime;
         }
     }
 
@@ -56,7 +57,9 @@ public class PlayerMovement : MonoBehaviour
         } else {
             moveSpeed = walkSpeed;
         }
-        transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+        if(horizontalInput != 0) {
+            transform.Translate(moveDirection * moveSpeed * Time.deltaTime);
+        }
         
     }
     void OnCollisionEnter2D(Collision2D other){
