@@ -11,7 +11,7 @@ public class PlayerMovement : MonoBehaviour
     public float wallJumpingPowerY = 3f;
     private float moveSpeed = 0;
     private float horizontalInput;
-    private float delay = 0;
+    private static float delay = 0;
     private bool isRunning;
     private bool isGrounded;
     private bool onWall;
@@ -25,6 +25,7 @@ public class PlayerMovement : MonoBehaviour
                 isGrounded = false;
             } else if(onWall) {
                 myRigidbody.velocity = new Vector2(-transform.localScale.x * wallJumpingPowerX, wallJumpingPowerY); 
+                transform.localScale = new Vector3(-transform.localScale.x, 1, 1);
                 delay = 0.5f;
             }
         }
@@ -46,6 +47,7 @@ public class PlayerMovement : MonoBehaviour
             }
         } else {
             delay -= Time.deltaTime;
+            horizontalInput = 0;
         }
     }
 
